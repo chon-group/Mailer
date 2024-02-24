@@ -1,8 +1,7 @@
-package group.chon.agent;
+package jason;
 
 import group.chon.agent.mailer.core.EMailMiddleware;
 import group.chon.agent.mailer.core.Util;
-import jason.ReceiverNotFoundException;
 import jason.asSemantics.Message;
 import jason.architecture.AgArch;
 
@@ -19,7 +18,11 @@ public class Mailer extends AgArch {
     @Override
     public void sendMsg(Message m){
         Util util = new Util();
-        if(util.isValidEmail(m.getReceiver())){
+        if(util.isValidEmail(m.getReceiver())
+                && this.emailBridge.getLogin()!=null
+                && this.emailBridge.getPassword()!=null
+                && this.emailBridge.isSHostEnable()
+                && this.emailBridge.isSPropsEnable()){
             this.emailBridge.sendMsg(m.getReceiver(),m.getIlForce(),m.getPropCont().toString());
         }else{
             try {

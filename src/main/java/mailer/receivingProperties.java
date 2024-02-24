@@ -1,4 +1,4 @@
-package group.chon.agent.mailer.jasonStdLib;
+package mailer;
 
 import group.chon.agent.mailer.core.MailerTS;
 import jason.asSemantics.DefaultInternalAction;

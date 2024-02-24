@@ -1,6 +1,6 @@
 package group.chon.agent.mailer.core;
 
-import group.chon.agent.Mailer;
+import jason.Mailer;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Circumstance;
 import jason.runtime.Settings;

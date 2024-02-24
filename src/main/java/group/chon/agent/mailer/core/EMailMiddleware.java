@@ -18,6 +18,9 @@ public class EMailMiddleware{
     private boolean RHostEnable = false;
     private boolean RPropsEnable = false;
 
+    private boolean SPropsEnable = false;
+    private boolean SHostEnable = false;
+
     private long lastChecked = 0;
 
     private String mailerName = "Mailer";
@@ -197,6 +200,7 @@ public class EMailMiddleware{
         this.Sprotocol = sprotocol;
         this.Sport = sport;
         this.Shost = shost;
+        this.SHostEnable = true;
     }
 
     public void setReceiverProps(String rhost, String rprotocol, String rport) {
@@ -218,6 +222,7 @@ public class EMailMiddleware{
         this.Ssslenable = ssslenable;
         this.Sssltrust = sssltrust;
         this.Ssslprotocol = ssslprotocol;
+        this.SPropsEnable = true;
     }
 
     public void setRAuth(boolean rauth,boolean rstarttls, boolean rsslenable, String rssltrust, String rsslprotocol) {
@@ -261,6 +266,14 @@ public class EMailMiddleware{
 
     public void setMailerName(String mailerName){
         this.mailerName = mailerName;
+    }
+
+    public boolean isSPropsEnable() {
+        return SPropsEnable;
+    }
+
+    public boolean isSHostEnable() {
+        return SHostEnable;
     }
 }
 

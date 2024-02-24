@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.chon-group</groupId>
-    <artifactId>MailerAgent</artifactId>
-    <version>0.2</version>
+    <artifactId>Mailer</artifactId>
+    <version>1.0</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -18,6 +18,10 @@
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>jacamo-repo</id>
+            <url>https://raw.githubusercontent.com/jacamo-lang/mvn-repo/master</url>
         </repository>
     </repositories>
 
@@ -48,10 +52,16 @@
             <version>1.10.14</version>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>com.github.jason-lang</groupId>-->
+<!--            <artifactId>jason</artifactId>-->
+<!--            <version>v3.1</version>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>com.github.jason-lang</groupId>
-            <artifactId>jason</artifactId>
-            <version>v3.1</version>
+            <groupId>io.github.jason-lang</groupId>
+            <artifactId>jason-interpreter</artifactId>
+            <version>3.2.0</version>
         </dependency>
 
     </dependencies>
