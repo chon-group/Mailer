@@ -6,7 +6,7 @@
 
     <groupId>com.github.chon-group</groupId>
     <artifactId>MailerAgent</artifactId>
-    <version>0.1-beta</version>
+    <version>0.2</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
