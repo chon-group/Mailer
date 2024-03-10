@@ -3,6 +3,7 @@ package group.chon.agent.mailer.core;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Logger;
 import javax.mail.*;
 import javax.mail.internet.*;
 
@@ -24,6 +25,8 @@ public class EMailMiddleware{
     private long lastChecked = 0;
 
     private String mailerName = "Mailer";
+
+    private Logger logger;
 
     private final Util util = new Util();
 
@@ -72,7 +75,8 @@ public class EMailMiddleware{
             }catch (InterruptedException ex){
                 //ex.printStackTrace();
             }
-            System.out.println("["+this.mailerName +"] Cheking mailbox:"+this.login);
+            this.logger.info("Cheking mailbox:"+this.login);
+            //System.out.println("["+this.mailerName +"] Cheking mailbox:"+this.login);
             this.lastChecked = System.currentTimeMillis();
             Session session = null;
             Properties props = sslProps();
@@ -86,7 +90,8 @@ public class EMailMiddleware{
                 session = Session.getInstance(props);
 
             } catch (Exception e) {
-                System.out.println("["+this.mailerName +"] Connection error:" + e);
+                this.logger.severe("Connection error:" + e);
+                //System.out.println("["+this.mailerName +"] Connection error:" + e);
                 return null;
             }
 
@@ -107,14 +112,18 @@ public class EMailMiddleware{
                     if (message.getFlags().contains(Flags.Flag.DELETED)  || message.getFlags().contains(Flags.Flag.SEEN)) {
                         continue;
                     }else{
-                        System.out.println("["+this.mailerName +"] New e-mail received!");
+                        this.logger.info("New e-mail received!");
+                        //System.out.println("["+this.mailerName +"] New e-mail received!");
                         message.setFlag(Flags.Flag.SEEN, true);
                         if (!util.isValidEmail(message.getFrom())){
-                            System.out.println("["+this.mailerName +"] The sender hasn't a valid Agent name!");
+                            this.logger.severe("The sender hasn't a valid Agent name!");
+                            //System.out.println("["+this.mailerName +"] The sender hasn't a valid Agent name!");
                         } else if (!util.isIllocutionaryForce(message.getSubject())) {
-                            System.out.println("["+this.mailerName +"] The subject is not a valid Illocutionary KQML force!");
+                            this.logger.severe("The subject is not a valid Illocutionary KQML force!");
+                            //System.out.println("["+this.mailerName +"] The subject is not a valid Illocutionary KQML force!");
                         } else if (!util.isValidTerm(message.getContent())){
-                            System.out.println("["+this.mailerName +"] The content is not a valid KQML message!");
+                            this.logger.severe("The content is not a valid KQML message!");
+                            //System.out.println("["+this.mailerName +"] The content is not a valid KQML message!");
                         } else {
                             try{
                                 jason.asSemantics.Message jasonMsgs = new jason.asSemantics.Message(
@@ -126,7 +135,8 @@ public class EMailMiddleware{
                                 //mark message for deletion
                                 message.setFlag(Flags.Flag.DELETED, true);
                             }catch (Exception exception){
-                                System.out.println("["+this.mailerName +"] Something is wrong with the message!");
+                                this.logger.severe("Something is wrong with the message!");
+                                //System.out.println("["+this.mailerName +"] Something is wrong with the message!");
                             }
                         }
                     }
@@ -138,7 +148,8 @@ public class EMailMiddleware{
                 inbox.close();
                 store.close();
             } catch (Exception e) {
-                System.out.println("["+this.mailerName +"] Error: " + e.getMessage());
+                this.logger.severe("Error: " + e.getMessage());
+                //System.out.println("["+this.mailerName +"] Error: " + e.getMessage());
             }
         }
         return jMsg;
@@ -171,7 +182,8 @@ public class EMailMiddleware{
                 }
             });
         }catch (Exception e){
-            System.out.println("["+this.mailerName+"] Connection error:" + e);
+            this.logger.severe("Connection error:" + e);
+            //System.out.println("["+this.mailerName+"] Connection error:" + e);
             return;
         }
 
@@ -188,9 +200,11 @@ public class EMailMiddleware{
             // Send the message
             Transport.send(msg,login,password);
 
-            System.out.println("["+this.mailerName +"] Email to "+recipientEmail+" sent successfully!");
+            this.logger.info("Email to "+recipientEmail+" sent successfully!");
+            //System.out.println("["+this.mailerName +"] Email to "+recipientEmail+" sent successfully!");
         }catch (MessagingException e) {
-            System.out.println("["+this.mailerName +"] Error sending email: " + e.getMessage());
+            this.logger.severe("Error sending email: " + e.getMessage());
+            //System.out.println("["+this.mailerName +"] Error sending email: " + e.getMessage());
         }
 
     }
@@ -274,6 +288,10 @@ public class EMailMiddleware{
 
     public boolean isSHostEnable() {
         return SHostEnable;
+    }
+
+    public void setLogger(Logger l){
+        this.logger = l;
     }
 }
 
