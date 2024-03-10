@@ -22,6 +22,7 @@ public class sendEMail extends DefaultInternalAction {
                 String destination =  args[0].toString().replaceAll("\"","");
                 if(util.isValidEmail(destination)){
                     if(mailerArch.isOUTConfigured()){
+                        mailerArch.getEmailBridge().setLogger(ts.getLogger());
                         mailerArch.getEmailBridge().sendMsg(destination,args[1].toString(),args[2].toString());
                         return true;
                     }else {

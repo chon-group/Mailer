@@ -20,6 +20,7 @@ public class eMailService extends DefaultInternalAction {
                 String[] output = parseString(args[1].toString());
 
                 if(input[1].equals("imaps")){
+                    mailerArch.getEmailBridge().setLogger(ts.getLogger());
                     mailerArch.getEmailBridge().setRAuth(
                             false,
                             true,
@@ -36,6 +37,7 @@ public class eMailService extends DefaultInternalAction {
                 }
 
                 if(output[1].equals("smtpOverTLS")){
+                    mailerArch.getEmailBridge().setLogger(ts.getLogger());
                     mailerArch.getEmailBridge().setSendAuth(
                             true,
                             true,

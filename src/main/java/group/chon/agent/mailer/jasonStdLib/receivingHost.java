@@ -16,6 +16,7 @@ public class receivingHost extends DefaultInternalAction {
         final Mailer mailerArch = Mailer.getMailerArch(ts.getAgArch());
         if(mailerArch != null){
             if (args.length == 3) {
+                mailerArch.getEmailBridge().setLogger(ts.getLogger());
                 mailerArch.getEmailBridge().setReceiverProps(
                         args[0].toString().replaceAll("\"",""),
                         args[1].toString().replaceAll("\"",""),

@@ -16,6 +16,7 @@ public class sendingProperties extends DefaultInternalAction {
         final Mailer mailerArch = Mailer.getMailerArch(ts.getAgArch());
         if(mailerArch != null){
             if (args.length == 5) {
+                mailerArch.getEmailBridge().setLogger(ts.getLogger());
                 mailerArch.getEmailBridge().setSendAuth(
                         Boolean.parseBoolean(args[0].toString().replaceAll("\"","")),
                         Boolean.parseBoolean(args[1].toString().replaceAll("\"","")),

@@ -16,12 +16,14 @@ public class receiveEMail extends DefaultInternalAction {
         final Mailer mailerArch = Mailer.getMailerArch(ts.getAgArch());
         if(mailerArch != null){
             if (args.length == 2) {
+                mailerArch.getEmailBridge().setLogger(ts.getLogger());
                 mailerArch.getEmailBridge().setLogin(args[0].toString());
                 mailerArch.getEmailBridge().setPassword(args[1].toString());
                 mailerArch.getEMailMessage();
                 return true;
             }else if(args.length == 0){
                 if(mailerArch.isINConfigured()){
+                    mailerArch.getEmailBridge().setLogger(ts.getLogger());
                     mailerArch.getEMailMessage();
                     return true;
                 }else{

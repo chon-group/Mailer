@@ -19,7 +19,7 @@ public class credentials extends DefaultInternalAction {
                 mailerArch.getEmailBridge().setLogger(ts.getLogger());
                 mailerArch.getEmailBridge().setLogin(args[0].toString().replaceAll("\"",""));
                 mailerArch.getEmailBridge().setPassword(args[1].toString().replaceAll("\"",""));
-                mailerArch.getEmailBridge().setMailerName(mailerArch.getAgName());
+                //mailerArch.getEmailBridge().setMailerName(mailerArch.getAgName());
                 return true;
             }else {
                 ts.getLogger().warning(Info.wrongParametersERROR(this.getClass().getName()));

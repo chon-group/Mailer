@@ -24,7 +24,7 @@ public class EMailMiddleware{
 
     private long lastChecked = 0;
 
-    private String mailerName = "Mailer";
+    //private String mailerName = "Mailer";
 
     private Logger logger;
 
@@ -148,7 +148,15 @@ public class EMailMiddleware{
                 inbox.close();
                 store.close();
             } catch (Exception e) {
-                this.logger.severe("Error: " + e.getMessage());
+                this.logger.severe("[ERROR] " + e.getMessage());
+                if(e.getMessage().equals("authentication failed")){
+                    setLogin(null);
+                    setPassword(null);
+                    this.logger.info(Info.credentialsINVALID(this.getClass().getName()));
+                }else{
+                    setReceiverProps(null,null,null);
+                    this.logger.info(Info.eMailProviderConfigurationNOTFOUND(this.getClass().getName()));
+                }
                 //System.out.println("["+this.mailerName +"] Error: " + e.getMessage());
             }
         }
@@ -205,11 +213,17 @@ public class EMailMiddleware{
         }catch (MessagingException e) {
             this.logger.severe("Error sending email: " + e.getMessage());
             //System.out.println("["+this.mailerName +"] Error sending email: " + e.getMessage());
+            if(e.getMessage().equals("535 Authentication credentials invalid")){
+                setLogin(null);
+                setPassword(null);
+                this.logger.info(Info.credentialsINVALID(this.getClass().getName()));
+            }else{
+                setSendProps(null,null,null);
+                this.logger.info(Info.eMailProviderConfigurationNOTFOUND(this.getClass().getName()));
+            }
         }
-
     }
 
-    //public void setSendProps(String sprotocol,String sport, String shost) {
     public void setSendProps(String shost,String sprotocol, String sport) {
         this.Sprotocol = sprotocol;
         this.Sport = sport;
@@ -278,9 +292,9 @@ public class EMailMiddleware{
         return RPropsEnable;
     }
 
-    public void setMailerName(String mailerName){
-        this.mailerName = mailerName;
-    }
+//    public void setMailerName(String mailerName){
+//        this.mailerName = mailerName;
+//    }
 
     public boolean isSPropsEnable() {
         return SPropsEnable;
