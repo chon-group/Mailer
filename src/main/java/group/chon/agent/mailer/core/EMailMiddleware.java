@@ -76,13 +76,7 @@ public class EMailMiddleware{
             setPassword(null);
         }else if ((System.currentTimeMillis() - (this.lastChecked + util.getRandom())) > 60000) {
             ArrayList<jason.asSemantics.Message> jMsg = new ArrayList<jason.asSemantics.Message>();
-//            try{
-//                Thread.sleep(ThreadLocalRandom.current().nextInt(0, 15001));
-//            }catch (InterruptedException ex){
-//                ex.printStackTrace();
-//            }
             this.logger.info("Cheking mailbox: "+this.login);
-            //System.out.println("["+this.mailerName +"] Cheking mailbox:"+this.login);
             this.lastChecked = System.currentTimeMillis();
             Session session = null;
             Properties props = sslProps();
@@ -91,66 +85,63 @@ public class EMailMiddleware{
                 props.put("mail." + Rprotocol + ".host", Rhost);
                 props.put("mail." + Rprotocol + ".port", Rport);
                 props.put("mail." + Rprotocol + ".leaveonserver", false);
-
-                //session = Session.getDefaultInstance(props);
                 session = Session.getInstance(props);
-
             } catch (Exception e) {
                 this.logger.severe("Configuration error:" + e);
                 return null;
             }
 
             try {
-                // Connect to the email server
-              //  Store store = session.getStore();
                 Store store = session.getStore(this.Rprotocol);
                 store.connect(this.login, this.password);
 
-                // Open the inbox folder and get the messages
-                Folder inbox = store.getFolder("INBOX");
-                inbox.open(Folder.READ_WRITE);
-                javax.mail.Message[] messages = inbox.getMessages();
-
-                // Loop through the messages and printing info
-                for (Message message : messages) {
-                    //Skip messages marked for deletion
-                    if (message.getFlags().contains(Flags.Flag.DELETED)  || message.getFlags().contains(Flags.Flag.SEEN)) {
-                        continue;
-                    }else{
-                        this.logger.info("New e-mail received!");
-                        //System.out.println("["+this.mailerName +"] New e-mail received!");
-                        message.setFlag(Flags.Flag.SEEN, true);
-                        if (!util.isValidEmail(message.getFrom())){
-                            this.logger.severe("The sender hasn't a valid Agent name!");
-                            //System.out.println("["+this.mailerName +"] The sender hasn't a valid Agent name!");
-                        } else if (!util.isIllocutionaryForce(message.getSubject())) {
-                            this.logger.severe("The subject is not a valid Illocutionary KQML force!");
-                            //System.out.println("["+this.mailerName +"] The subject is not a valid Illocutionary KQML force!");
-                        } else if (!util.isValidTerm(message.getContent())){
-                            this.logger.severe("The content is not a valid KQML message!");
-                            //System.out.println("["+this.mailerName +"] The content is not a valid KQML message!");
-                        } else {
-                            try{
-                                jason.asSemantics.Message jasonMsgs = new jason.asSemantics.Message(
-                                        util.getKqmlILF(),
-                                        util.getSender(),
-                                        null,
-                                        util.getKqmlMessage());
-                                jMsg.add(jasonMsgs);
-                                //mark message for deletion
-                                message.setFlag(Flags.Flag.DELETED, true);
-                            }catch (Exception exception){
-                                this.logger.severe("Something is wrong with the message!");
-                                //System.out.println("["+this.mailerName +"] Something is wrong with the message!");
+                // Getting the list of folders
+                Folder[] allFolders = store.getDefaultFolder().list("*");
+                // Looking for Message in each folder
+                for(int i=0; i<allFolders.length; i++){
+                    // Open the inbox folder and get the messages
+                    //Folder inbox = store.getFolder("INBOX");
+                    //inbox.open(Folder.READ_WRITE);
+                    allFolders[i].open(Folder.READ_WRITE);
+                    //javax.mail.Message[] messages = inbox.getMessages();
+                    javax.mail.Message[] messages = allFolders[i].getMessages();
+                    // Loop through the messages and printing info
+                    for (Message message : messages) {
+                        //Skip messages marked for deletion
+                        if (message.getFlags().contains(Flags.Flag.DELETED)  || message.getFlags().contains(Flags.Flag.SEEN)) {
+                            continue;
+                        }else{
+                            this.logger.info("New e-mail in "+allFolders[i].getName());
+                                message.setFlag(Flags.Flag.SEEN, true);
+                            if (!util.isValidEmail(message.getFrom())){
+                                this.logger.severe("The sender hasn't a valid Agent name!");
+                            } else if (!util.isIllocutionaryForce(message.getSubject())) {
+                                this.logger.severe("The subject is not a valid Illocutionary KQML force!");
+                            } else if (!util.isValidTerm(message.getContent())){
+                                this.logger.severe("The content is not a valid KQML message!");
+                            } else {
+                                try{
+                                    jason.asSemantics.Message jasonMsgs = new jason.asSemantics.Message(
+                                            util.getKqmlILF(),
+                                            util.getSender(),
+                                            null,
+                                            util.getKqmlMessage());
+                                    jMsg.add(jasonMsgs);
+                                    //mark message for deletion
+                                    message.setFlag(Flags.Flag.DELETED, true);
+                                }catch (Exception exception){
+                                    this.logger.severe("Something is wrong with the message!");
+                                }
                             }
                         }
                     }
+                    if (Rprotocol.contains("imap")) {
+                        //inbox.expunge();
+                        allFolders[i].expunge();
+                    }
+                    //inbox.close();
+                    allFolders[i].close();
                 }
-                if (Rprotocol.contains("imap")) {
-                    inbox.expunge();
-                }
-                // Close the folder and store objects
-                inbox.close();
                 store.close();
                 this.attemptConnection = 0;
                 return jMsg;
