@@ -30,6 +30,8 @@ public class EMailMiddleware{
 
     private final Util util = new Util();
 
+    private int attemptConnection = 0;
+
     public Properties sslProps () {
         //Checks which properties are required for the connection / else uses the defaut
         Properties properties = new Properties();
@@ -68,14 +70,18 @@ public class EMailMiddleware{
     }
 
     public ArrayList<jason.asSemantics.Message> checkEMail() {
-        ArrayList<jason.asSemantics.Message> jMsg = new ArrayList<jason.asSemantics.Message>();
-        if (System.currentTimeMillis() - this.lastChecked > 60000) {
-            try{
-                Thread.sleep(ThreadLocalRandom.current().nextInt(0, 15001));
-            }catch (InterruptedException ex){
-                //ex.printStackTrace();
-            }
-            this.logger.info("Cheking mailbox:"+this.login);
+        if(!util.isValidEmail(this.login)){
+            this.logger.severe(Info.credentialsINVALID(this.getClass().getName()));
+            setLogin(null);
+            setPassword(null);
+        }else if ((System.currentTimeMillis() - (this.lastChecked + util.getRandom())) > 60000) {
+            ArrayList<jason.asSemantics.Message> jMsg = new ArrayList<jason.asSemantics.Message>();
+//            try{
+//                Thread.sleep(ThreadLocalRandom.current().nextInt(0, 15001));
+//            }catch (InterruptedException ex){
+//                ex.printStackTrace();
+//            }
+            this.logger.info("Cheking mailbox: "+this.login);
             //System.out.println("["+this.mailerName +"] Cheking mailbox:"+this.login);
             this.lastChecked = System.currentTimeMillis();
             Session session = null;
@@ -90,8 +96,7 @@ public class EMailMiddleware{
                 session = Session.getInstance(props);
 
             } catch (Exception e) {
-                this.logger.severe("Connection error:" + e);
-                //System.out.println("["+this.mailerName +"] Connection error:" + e);
+                this.logger.severe("Configuration error:" + e);
                 return null;
             }
 
@@ -147,20 +152,29 @@ public class EMailMiddleware{
                 // Close the folder and store objects
                 inbox.close();
                 store.close();
+                this.attemptConnection = 0;
+                return jMsg;
             } catch (Exception e) {
-                this.logger.severe("[ERROR] " + e.getMessage());
                 if(e.getMessage().equals("authentication failed")){
                     setLogin(null);
                     setPassword(null);
+                    this.logger.severe("[ERROR] " + e.getMessage());
                     this.logger.info(Info.credentialsINVALID(this.getClass().getName()));
-                }else{
+                } else if (e.getMessage().contains("Couldn't connect to host") && (this.attemptConnection < 9)) {
+                    this.attemptConnection++;
+                    int delay = util.getRandom() * this.attemptConnection;
+                    this.logger.severe(e.getMessage()+"; attempt "+this.attemptConnection+"; trying again in "+(delay+60000)/1000+" seconds.");
+                    this.lastChecked = System.currentTimeMillis()+delay;
+                }
+                else{
                     setReceiverProps(null,null,null);
+                    this.logger.severe("[ERROR] " + e.getMessage());
                     this.logger.info(Info.eMailProviderConfigurationNOTFOUND(this.getClass().getName()));
                 }
-                //System.out.println("["+this.mailerName +"] Error: " + e.getMessage());
+                return null;
             }
         }
-        return jMsg;
+        return null;
     }
 
 

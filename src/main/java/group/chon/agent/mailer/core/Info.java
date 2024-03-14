@@ -27,17 +27,17 @@ public class Info {
     }
 
     public static String eMailProviderConfigurationNOTFOUND(String action){
-        return "[WARNING] It was not possible to execute the internal action "+action+" because the Email Service configurations appears wrong.\n"+
-                "\t\t[INFO] See more at "+WIKI_InternalActions;
+        return "[WARNING] It was not possible to execute the internal action "+action+" because the Email Service configurations appears wrong. "+
+                "See more at "+WIKI_InternalActions;
     }
 
     public static String emailINVALID(String action){
-        return "[WARNING] It was not possible to execute the internal action "+action+" because the destination e-mail address appears wrong.\n"+
-                "\t\t[INFO] See more at "+WIKI_InternalActions;
+        return "[WARNING] It was not possible to execute the internal action "+action+" because the destination e-mail address appears wrong. "+
+                "See more at "+WIKI_InternalActions;
     }
 
     public static String credentialsINVALID(String action){
-        return "[WARNING] It was not possible to execute the internal action "+action+" because the e-mail credentials appears wrong.\n"+
-                "\t\t[INFO] See more at "+WIKI_URL;
+        return "[WARNING] It was not possible to execute the internal action "+action+" because the e-mail credentials appears wrong. "+
+                "See more at "+WIKI_URL;
     }
 }

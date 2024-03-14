@@ -23,7 +23,8 @@ public class Mailer extends AgArch {
             if(isOUTConfigured()){
                 this.emailBridge.sendMsg(m.getReceiver(),m.getIlForce(),m.getPropCont().toString());
             }else{
-                System.out.println(Info.eMailProviderConfigurationNOTFOUND("sendMsg"));
+                this.getTS().getLogger().warning(Info.eMailProviderConfigurationNOTFOUND("sendMsg"));
+                //System.out.println(Info.eMailProviderConfigurationNOTFOUND("sendMsg"));
             }
         }else{
             try {
@@ -54,8 +55,10 @@ public class Mailer extends AgArch {
     public void getEMailMessage() {
         if (isINConfigured()){
             ArrayList<Message> list = this.emailBridge.checkEMail();
-            for (Message item : list) {
-                this.getTS().getC().addMsg(item);
+            if(list != null){
+                for (Message item : list) {
+                    this.getTS().getC().addMsg(item);
+                }
             }
         }
     }

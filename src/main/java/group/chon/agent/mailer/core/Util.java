@@ -10,6 +10,7 @@ import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -154,5 +155,9 @@ public class Util {
         Pattern pattern = Pattern.compile("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(?:\\.[a-zA-Z]{2,})?$");
         Matcher matcher = pattern.matcher(strSource);
         return  matcher.matches();
+    }
+
+    public int getRandom(){
+        return ThreadLocalRandom.current().nextInt(0, 15001);
     }
 }
