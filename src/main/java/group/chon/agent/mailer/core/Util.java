@@ -3,6 +3,7 @@ package group.chon.agent.mailer.core;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Plan;
 import jason.asSyntax.Term;
+import jason.asSyntax.parser.ParseException;
 import org.jsoup.*;
 import org.jsoup.nodes.*;
 
@@ -22,18 +23,32 @@ public class Util {
 
     private Term term;
 
-    private void setKqmlMessage(String kqmlMessage) throws Exception {
+    private boolean setKqmlMessage(String kqmlMessage) {
         if(getKqmlILF().equals("tellHow")){
             Plan p = null;
-            if(kqmlMessage.startsWith("\"") && kqmlMessage.endsWith("\"")){
-                p = ASSyntax.parsePlan(kqmlMessage.substring(1,kqmlMessage.length()-1));
-            }else{
-                p = ASSyntax.parsePlan(kqmlMessage);
+            try{
+                if(kqmlMessage.startsWith("\"") && kqmlMessage.endsWith("\"")){
+                    p = ASSyntax.parsePlan(kqmlMessage.substring(1,kqmlMessage.length()-1));
+                }else{
+                    p = ASSyntax.parsePlan(kqmlMessage);
+                }
+                this.kqmlMessage = "\""+p.toString()+"\"";
+                return true;
+            }catch (Exception ep){
+                System.out.println(ep.getMessage());
+                this.kqmlMessage = null;
+                return false;
             }
-            this.kqmlMessage = "\""+p.toString()+"\"";
         }else{
-            Term t = ASSyntax.parseTerm(kqmlMessage);
-            this.kqmlMessage = t.toString();
+            try{
+                Term t = ASSyntax.parseTerm(kqmlMessage);
+                this.kqmlMessage = t.toString();
+                return true;
+            }catch (Exception ep){
+                System.out.println(ep.getMessage());
+                this.kqmlMessage = null;
+                return false;
+            }
         }
     }
 
@@ -76,13 +91,7 @@ public class Util {
         if(message == null){
             return false;
         }else{
-            try{
-                setKqmlMessage(message);
-                return true;
-            }catch (Exception ex){
-                ex.printStackTrace();
-                return false;
-            }
+            return setKqmlMessage(message);
         }
     }
 
