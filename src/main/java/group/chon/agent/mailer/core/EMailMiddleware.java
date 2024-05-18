@@ -2,7 +2,6 @@ package group.chon.agent.mailer.core;
 
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -15,17 +14,11 @@ public class EMailMiddleware{
     private String password;
     private boolean Sauth, Sstarttls, Ssslenable,Rauth, Rstarttls, Rsslenable;
     private String Sssltrust,Ssslprotocol,Rssltrust,Rsslprotocol;
-
     private boolean RHostEnable = false;
     private boolean RPropsEnable = false;
-
     private boolean SPropsEnable = false;
     private boolean SHostEnable = false;
-
     private long lastChecked = 0;
-
-    //private String mailerName = "Mailer";
-
     private Logger logger;
 
     private final Util util = new Util();
@@ -99,15 +92,9 @@ public class EMailMiddleware{
                 Folder[] allFolders = store.getDefaultFolder().list("*");
                 // Looking for Message in each folder
                 for(int i=0; i<allFolders.length; i++){
-                    // Open the inbox folder and get the messages
-                    //Folder inbox = store.getFolder("INBOX");
-                    //inbox.open(Folder.READ_WRITE);
                     allFolders[i].open(Folder.READ_WRITE);
-                    //javax.mail.Message[] messages = inbox.getMessages();
                     javax.mail.Message[] messages = allFolders[i].getMessages();
-                    // Loop through the messages and printing info
                     for (Message message : messages) {
-                        //Skip messages marked for deletion
                         if (message.getFlags().contains(Flags.Flag.DELETED)  || message.getFlags().contains(Flags.Flag.SEEN)) {
                             continue;
                         }else{
@@ -127,7 +114,6 @@ public class EMailMiddleware{
                                             null,
                                             util.getKqmlMessage());
                                     jMsg.add(jasonMsgs);
-                                    //mark message for deletion
                                     message.setFlag(Flags.Flag.DELETED, true);
                                 }catch (Exception exception){
                                     this.logger.severe("Something is wrong with the message!");
@@ -136,10 +122,8 @@ public class EMailMiddleware{
                         }
                     }
                     if (Rprotocol.contains("imap")) {
-                        //inbox.expunge();
                         allFolders[i].expunge();
                     }
-                    //inbox.close();
                     allFolders[i].close();
                 }
                 store.close();
@@ -169,15 +153,13 @@ public class EMailMiddleware{
     }
 
 
-    public static String addressToString(Address[] rawAddress) {
-        //Check if address is not null and convert it to regular addresses
-        if (rawAddress != null) {
-            return rawAddress[0].toString();
-        } else return "null";
-    }
+//    public static String addressToString(Address[] rawAddress) {
+//        if (rawAddress != null) {
+//            return rawAddress[0].toString();
+//        } else return "null";
+//    }
 
     public void sendMsg(String recipientEmail, String subject, String message) {
-        //Session session;
         Session session = null;
         Properties props = sslProps();
 
@@ -196,28 +178,22 @@ public class EMailMiddleware{
             });
         }catch (Exception e){
             this.logger.severe("Connection error:" + e);
-            //System.out.println("["+this.mailerName+"] Connection error:" + e);
             return;
         }
 
         try {
-            // Create a new message
             Message msg = new MimeMessage(session);
 
-            // Set the recipient, subject, and message content
             msg.setFrom(new InternetAddress(login));
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
             msg.setSubject(subject);
             msg.setText(message);
 
-            // Send the message
             Transport.send(msg,login,password);
 
             this.logger.info("Email to "+recipientEmail+" sent successfully!");
-            //System.out.println("["+this.mailerName +"] Email to "+recipientEmail+" sent successfully!");
         }catch (MessagingException e) {
             this.logger.severe("Error sending email: " + e.getMessage());
-            //System.out.println("["+this.mailerName +"] Error sending email: " + e.getMessage());
             if(e.getMessage().equals("535 Authentication credentials invalid")){
                 setLogin(null);
                 setPassword(null);
@@ -296,10 +272,6 @@ public class EMailMiddleware{
     public boolean isRPropsEnable() {
         return RPropsEnable;
     }
-
-//    public void setMailerName(String mailerName){
-//        this.mailerName = mailerName;
-//    }
 
     public boolean isSPropsEnable() {
         return SPropsEnable;

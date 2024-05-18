@@ -5,7 +5,6 @@ import group.chon.agent.mailer.core.Info;
 import group.chon.agent.mailer.core.Util;
 import jason.asSemantics.Message;
 import jason.architecture.AgArch;
-
 import java.util.ArrayList;
 
 public class Mailer extends AgArch {
@@ -24,7 +23,6 @@ public class Mailer extends AgArch {
                 this.emailBridge.sendMsg(m.getReceiver(),m.getIlForce(),m.getPropCont().toString());
             }else{
                 this.getTS().getLogger().warning(Info.eMailProviderConfigurationNOTFOUND("sendMsg"));
-                //System.out.println(Info.eMailProviderConfigurationNOTFOUND("sendMsg"));
             }
         }else{
             try {

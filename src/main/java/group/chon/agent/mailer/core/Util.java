@@ -3,10 +3,8 @@ package group.chon.agent.mailer.core;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Plan;
 import jason.asSyntax.Term;
-import jason.asSyntax.parser.ParseException;
 import org.jsoup.*;
 import org.jsoup.nodes.*;
-
 import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMultipart;
@@ -18,9 +16,7 @@ import java.util.regex.Pattern;
 public class Util {
     private String kqmlMessage;
     private String kqmlILF;
-
     private String sender;
-
     private Term term;
 
     private boolean setKqmlMessage(String kqmlMessage) {
@@ -73,9 +69,6 @@ public class Util {
     }
 
     private String stripHTML(String html) {
-        //String text = html.replaceAll("<[^>]*>", "");
-        //text = text.replaceAll("\\s+", " ");
-        //return text;
         Document doc = Jsoup.parse(html);
         return doc.text();
     }
